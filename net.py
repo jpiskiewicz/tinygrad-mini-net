@@ -64,4 +64,6 @@ class Net:
     d1, x = self.e1(self.b1(self.conv1(x)))
     d2, x = self.e2(x)
     x = self.d2(self.d1(self.dmr(x)).add(self.b1(self.conv2(d1)))).add(self.b2(self.conv3(d2)))
-    return self.b3(self.conv4(x)).relu()
+    x1 = self.conv4(self.b3(self.conv4(x)).relu()).sigmoid()
+    assert isinstance(x1, Tensor)
+    return x1

@@ -30,7 +30,7 @@ class EncoderBlock:
   def __init__(self, in_channels: int):
     out_channels = in_channels * 2
     self.dmr = DualMultiscaleResidual(in_channels)
-    self.strided_conv = Conv2d(in_channels, out_channels, 3, 2) # This probably needs to be padded
+    self.strided_conv = Conv2d(in_channels, out_channels, 3, 2, 1)
 
   def __call__(self, x: Tensor) -> Tuple[Tensor, Tensor]:
     x = self.dmr(x)

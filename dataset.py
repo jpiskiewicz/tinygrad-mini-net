@@ -156,4 +156,11 @@ class Dataset:
     self.masks += masks
     return n
 
+  def remove_object_ids(self):
+    """
+    Removes the channel containing object IDs from the masks.
+    """
+    assert isinstance(self.masks, Tensor)
+    self.masks = self.masks.shrink((None, (0, 1), None, None))
+
   def save(self, filename: str): safe_save({ "images": self.images, "masks": self.masks }, filename)

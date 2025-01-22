@@ -59,13 +59,13 @@ class Net:
     self.d1 = DecoderBlock(32)
     self.d2 = DecoderBlock(16)
     self.conv4 = Conv2d(8, 1, 1)
+    self.conv5 = Conv2d(1, 1, 1)
     self.b3 = BatchNorm(1)
 
   def __call__(self, x: Tensor) -> Tensor:
-    print(x.shape, self.e1(self.b1(self.conv1(x)))[1].shape)
     dmr1, x = self.e1(self.b1(self.conv1(x)))
     dmr2, x = self.e2(x)
     x = self.d2(self.d1(self.dmr(x)).add(self.b2(self.conv3(dmr2)))).add(self.b1(self.conv2(dmr1)))
-    x1 = self.conv4(self.b3(self.conv4(x)).relu()).sigmoid()
+    x1 = self.conv5(self.b3(self.conv4(x)).relu()).sigmoid()
     assert isinstance(x1, Tensor)
     return x1

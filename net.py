@@ -1,6 +1,7 @@
 from tinygrad.nn import Conv2d, ConvTranspose2d, BatchNorm
 from tinygrad.tensor import Tensor
 from typing import Tuple
+from tinygrad.nn.state import safe_save, get_state_dict
 
 
 class ExpandSqueeze:
@@ -69,3 +70,5 @@ class Net:
     x1 = self.conv5(self.b3(self.conv4(x)).relu()).sigmoid()
     assert isinstance(x1, Tensor)
     return x1
+
+  def save_state(self, s: int): safe_save(get_state_dict(self), f"checkpoint_{s}.safetensor")

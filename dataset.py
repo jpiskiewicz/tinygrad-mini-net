@@ -57,7 +57,7 @@ class Dataset:
 
   def load_safetensors(self, filename: str):
     data = safe_load(filename)
-    self.images, self.masks = data["images"].to("METAL"), data["masks"].to("METAL")
+    self.images, self.masks = data["images"].to("CUDA"), data["masks"].to("CUDA")
 
   def collect_glob(self, dirs: list[str], is_mask: bool = False) -> chain[str]:
     return chain.from_iterable(glob.glob(f"data/{x}/*){'_*' if is_mask else ''}.png") for x in dirs)

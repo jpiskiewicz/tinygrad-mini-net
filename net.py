@@ -12,6 +12,9 @@ class ExpandSqueeze:
 
   def __call__(self, x: Tensor) -> Tensor: return self.bn(self.pointwise(self.depthwise(x.relu())))
 
+  @property
+  def weight(self) -> list[Tensor]: return [self.depthwise.weight, self.pointwise.weight, self.bn.weight]
+
 
 class DualMultiscaleResidual:
   def __init__(self, in_channels: int):
@@ -26,6 +29,9 @@ class DualMultiscaleResidual:
     es2 = self.expandSqueeze2(x2)
     return self.expandSqueeze1(x2).add(es2).add(self.bn(self.conv(x))).relu()
 
+  @property
+  def weight(self) -> list[Tensor]: return self.expandSqueeze1.weight + self.expandSqueeze2.weight + [self.conv, self.bn]
+
 
 class EncoderBlock:
   def __init__(self, in_channels: int):
@@ -37,6 +43,9 @@ class EncoderBlock:
     x = self.dmr(x)
     return x, self.strided_conv(x)
 
+  @property
+  def weight(self) -> list[Tensor]: return self.dmr.weight + [self.strided_conv.weight]
+
 
 class DecoderBlock:
   def __init__(self, in_channels: int):
@@ -45,6 +54,9 @@ class DecoderBlock:
     self.dmr = DualMultiscaleResidual(out_channels)
 
   def __call__(self, x: Tensor) -> Tensor: return self.dmr(self.transpose_conv(x))
+
+  @property
+  def weight(self) -> list[Tensor]: return self.transpose_conv.weight + [self.dmr.weight]
 
 
 class Net:
@@ -72,3 +84,24 @@ class Net:
     return x1
 
   def save_state(self, s: int): safe_save(get_state_dict(self), f"checkpoint_{s}.safetensor")
+
+  @property
+  def weight(self) -> list[Tensor]:
+    layers = [
+      self.conv1,
+      self.b1,
+      self.e1,
+      self.conv2,
+      self.e2,
+      self.conv3,
+      self.b2,
+      self.dmr,
+      self.d1,
+      self.d2,
+      self.conv4,
+      self.conv5,
+      self.b3
+    ]
+    weights = []
+    for x in layers: weights += [x.weight] if isinstance(x.weight, Tensor) else x.weight
+    return weights

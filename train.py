@@ -5,7 +5,6 @@ from typing import Callable
 from net import Net
 from dataset import Dataset, TOTAL_EXAMPLES
 from tinygrad.nn.optim import Adam
-from tinygrad.nn.state import get_parameters
 from tinygrad.engine.jit import TinyJit
 
 
@@ -30,7 +29,7 @@ def total_loss_factory() -> Callable[[Tensor, Tensor], Tensor]:
 
 if __name__ == "__main__":
   net = Net()
-  opt = Adam(get_parameters(net), lr=0.0001)
+  opt = Adam(net.weight, lr=0.0001)
   dataset = Dataset("dataset.safetensors")
   dataset.remove_object_ids()
   total_loss = total_loss_factory()

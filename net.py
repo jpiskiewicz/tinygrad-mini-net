@@ -30,7 +30,7 @@ class DualMultiscaleResidual:
     return self.expandSqueeze1(x2).add(es2).add(self.bn(self.conv(x))).relu()
 
   @property
-  def weight(self) -> list[Tensor]: return self.expandSqueeze1.weight + self.expandSqueeze2.weight + [self.conv, self.bn]
+  def weight(self) -> list[Tensor]: return self.expandSqueeze1.weight + self.expandSqueeze2.weight + [self.conv.weight, self.bn.weight]
 
 
 class EncoderBlock:
@@ -56,7 +56,7 @@ class DecoderBlock:
   def __call__(self, x: Tensor) -> Tensor: return self.dmr(self.transpose_conv(x))
 
   @property
-  def weight(self) -> list[Tensor]: return self.transpose_conv.weight + [self.dmr.weight]
+  def weight(self) -> list[Tensor]: return [self.transpose_conv.weight] + self.dmr.weight
 
 
 class Net:

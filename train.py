@@ -30,7 +30,7 @@ def total_loss_factory() -> Callable[[Tensor, Tensor], Tensor]:
 if __name__ == "__main__":
   net = Net()
   opt = Adam(net.weight, lr=0.0001)
-  dataset = Dataset("dataset.safetensors")
+  dataset = Dataset("../dataset.safetensors")
   dataset.remove_object_ids()
   total_loss = total_loss_factory()
 
